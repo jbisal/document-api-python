@@ -333,7 +333,7 @@ class Field(object):
         """ Returns all members that are registered under this field.
 
         Returns:
-            Key-value mappings of all registered members. Dict.
+            list of all registered members.
         """
         return [member.attrib.get("value") for member in self._xml.findall('members/member')]
 

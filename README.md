@@ -23,7 +23,6 @@ This fork builds on Tableau’s Document API with optional, backward-compatible 
 - **XML string input** – `Workbook` class now accepts TWB XML string input for integration with Tableau Server Client and REST API
 - **Parameter parsing** – Enhanced `Field` class with read-only parameter attributes (`value`, `param_domain_type`, `members`) and added `get_workbook_parameters()` method
 
-
 Detailed descriptions, examples, and resolved issue references are available in [Version 012 Enhancements](Version_012_enhancements.md).
 
 ## Upstream Issues Resolved

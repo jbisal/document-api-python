@@ -110,9 +110,9 @@ for p in parameters:
 ```
 
 
-### Enhanced Workbook Class
-
-#### New Properties
+## Enhanced Classes
+### Workbook Class
+#### New Workbook Properties
 - `dashboard_objects` - Dictionary mapping dashboard names to Dashboard objects
 - `worksheet_objects` - Dictionary mapping worksheet names to Worksheet objects  
 - `query` - Query object for advanced workbook analysis
@@ -131,8 +131,8 @@ wb2 = Workbook(twb_xml_string=xml_content)
 # Note: Workbooks created from strings cannot use save(), only save_as()
 wb2.save_as('new_file.twb')
 ```
-
-#### Enhanced Field Properties
+### Field Class
+#### New Field Properties
 Field objects now include parameter-specific properties:
 
 **New Properties:**

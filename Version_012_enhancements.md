@@ -136,19 +136,23 @@ wb2.save_as('new_file.twb')
 Field objects now include parameter-specific properties:
 
 **New Properties:**
+- `table` - The datasource table the column belongs to (not applicable to calculations, parameters)
 - `value` - The default value for parameters
 - `param_domain_type` - Parameter domain type (range, list, etc.)
 - `members` - List of member values (improved extraction from XML)
 
 ```python
-# Access parameter-specific field properties
 for ds in wb.datasources:
+    # Access parameter-specific field properties
     if ds.name == "Parameters":
         for field_name, field in ds.fields.items():
             print(f"Parameter: {field.caption}")
             print(f"  Value: {field.value}")
             print(f"  Domain Type: {field.param_domain_type}")
             print(f"  Members: {field.members}")
+    else:
+        # Get the table in the datasource a column belongs to
+        print(f"Table: {field.table})
 ```
 
 #### Backwards Compatibility

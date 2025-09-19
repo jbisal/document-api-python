@@ -341,7 +341,6 @@ class Field(object):
     def table(self):
         """Get the table of a column in a datasource."""
         node = self._xml
-        import pdb; pdb.set_trace()
         if node is None:
             return None
 

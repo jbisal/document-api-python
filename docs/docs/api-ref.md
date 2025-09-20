@@ -170,11 +170,11 @@ Represents a field in a datasource
 
 `self.worksheets` Returns a list of strings with the worksheet names that use this field.
 
-`self.value` *(added in v012)* Returns a string with the default value for parameters, None for regular fields.
+`self.value` *(added in v012)* Returns a string with the default value for a field. Applicable to parameters, not regular columns/calculations.
 
-`self.param_domain_type` *(added in v012)* Returns a string with the parameter domain type (range, list, etc.), None for regular fields.
+`self.param_domain_type` *(added in v012)* Returns a string with the parameter domain type (range, list, etc.). Applicable to parameters, not regular columns/calculations.
 
-`self.members` *(added in v012)* Returns a list of member values extracted from the field's XML.
+`self.members` *(added in v012)* Returns a list of member values extracted from the field's XML. Applicable to parameters, not regular columns/calculations.
 
 `self.table` *(added in v012)* Returns a string with the name of the datasource table a column belongs to.
 

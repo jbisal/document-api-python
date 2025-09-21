@@ -287,4 +287,8 @@ Provides high-level querying capabilities across the workbook.
 
 `Query.get_field_objects(self, column):` Links column references to Field objects from datasources. Returns Field object if found, None otherwise.
 
-`Query.get_workbook_parameters(self):` *(added in v012)* Returns a list of dictionaries containing all workbook parameters with their attributes including alias, aliases, calculation, caption, datatype, name, parameter domain type, role, type, value, worksheets, and members.
+`Query.get_workbook_fields(self, column):` Returns a list of dictionaries containing all workbook fields, with their attributes, including 'alias', 'aliases', 'calculation', 'caption', 'datatype', 'default_aggregation',
+            'description', 'hidden', 'id', 'is_nominal', 'is_ordinal','is_quantitative', 
+            'name', 'param_domain_type', 'role', 'table', 'type','value','worksheets', and datasource
+
+`Query.get_workbook_parameters(self):` Returns a list of dictionaries containing all workbook parameters with their attributes including alias, aliases, calculation, caption, datatype, name, parameter domain type, role, type, value, worksheets, and members.

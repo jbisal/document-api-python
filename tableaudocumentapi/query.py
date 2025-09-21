@@ -98,3 +98,24 @@ class Query(object):
                         "Members": datasource.fields[field].members
                     })
         return workbook_parameters
+    
+    
+    
+    def get_workbook_fields(self):
+        """Get all Fields in a workbook and their attributes as a list of dictionaries"""
+        import pdb; pdb.set_trace()
+        field_attributes = [
+            'alias', 'aliases', 'calculation', 'caption', 'datatype', 'default_aggregation',
+            'description', 'hidden', 'id', 'is_nominal', 'is_ordinal','is_quantitative', 
+            'name', 'param_domain_type', 'role', 'table', 'type','value','worksheets']
+        workbook_fields = []
+        for datasource in self._workbook.datasources:
+             fields = datasource.fields
+             for _ in fields:
+                field_dict = {}
+                field_dict['datasource'] = datasource.name
+                field_dict['field_key'] = _
+                for field_attribute in field_attributes:
+                    field_dict[field_attribute] = getattr(fields[_],field_attribute)
+                workbook_fields.append(field_dict)
+        return workbook_fields

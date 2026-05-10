@@ -9,11 +9,21 @@ class Filter(object):
             filter_xml: XML element representing the filter
         """
         
-        self._xml = filter_xml 
+        self._xml = filter_xml
         self._filter_class = filter_xml.get('class')
         self._column = _clean_aggregated_column_names(filter_xml.get('column'))[1]
         self._datasource = _clean_aggregated_column_names(filter_xml.get('column'))[0]
         self._groupfilters = self._parse_groupfilters()
+
+        self._included_values = filter_xml.get('included-values')
+        self._min_value = None
+        self._max_value = None
+        min_el = filter_xml.find('min')
+        max_el = filter_xml.find('max')
+        if min_el is not None:
+            self._min_value = min_el.text
+        if max_el is not None:
+            self._max_value = max_el.text
         
     @property
     def xml(self):
@@ -39,6 +49,35 @@ class Filter(object):
     def datasource(self):
         """Return datasource of the columns of the filter """
         return self._datasource
+
+    @property
+    def min_value(self):
+        """Return <min> text for quantitative range filters, or None."""
+        return self._min_value
+
+    @property
+    def max_value(self):
+        """Return <max> text for quantitative range filters, or None."""
+        return self._max_value
+
+    @property
+    def included_values(self):
+        """Return the included-values attribute (e.g. 'in-range', 'all'), or None."""
+        return self._included_values
+
+    @property
+    def members(self):
+        """Flat list of member values extracted from groupfilters (categorical filters)."""
+        values = []
+
+        def _extract(gf_list):
+            for gf in gf_list:
+                if gf.get('function') == 'member' and gf.get('member'):
+                    values.append(gf['member'].strip('"'))
+                _extract(gf.get('children', []))
+
+        _extract(self._groupfilters)
+        return values
 
     def _parse_groupfilters(self):
         """Function that will parse the groupfilters under the filter"""

@@ -45,6 +45,17 @@ class DatasourceDependency(object):
         for column_instance in self._xml.findall('column-instance'):
             col_attrib = column_instance.get('column')
             if col_attrib:
-                column_instances[col_attrib] = dict(column_instance.attrib)
+                instance = dict(column_instance.attrib)
+                tc = column_instance.find('table-calc')
+                if tc is not None:
+                    instance['table_calc'] = dict(tc.attrib)
+                    addr = tc.find('address')
+                    if addr is not None:
+                        instance['table_calc']['address_values'] = [
+                            v.text for v in addr.findall('value') if v.text
+                        ]
+                else:
+                    instance['table_calc'] = None
+                column_instances[col_attrib] = instance
         return column_instances
     

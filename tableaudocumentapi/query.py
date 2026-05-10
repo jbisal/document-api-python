@@ -35,7 +35,8 @@ class Query(object):
                         "Column_instance_Derivation":column_instance.get('derivation'),
                         "Column_instance_Name":column_instance.get('name'),
                         "Column_instance_Pivot":column_instance.get('pivot'),
-                        "Column_instance_Type":column_instance.get('type')
+                        "Column_instance_Type":column_instance.get('type'),
+                        "Table_calc":column_instance.get('table_calc'),
                     })
         return worksheet_dependencies
     
@@ -108,7 +109,11 @@ class Query(object):
                     "Filter_class": f.filter_class,
                     "Datasource": f.datasource,
                     "Column": f.column,
-                    "Groupfilters": f.groupfilters
+                    "Groupfilters": f.groupfilters,
+                    "Min_value": f.min_value,
+                    "Max_value": f.max_value,
+                    "Included_values": f.included_values,
+                    "Members": f.members,
                 })
         return self.normalize_worksheet_filters(worksheet_filters)
 
@@ -129,7 +134,36 @@ class Query(object):
                 out.append({"Worksheet": ws.name, "Datasource": ds_name, "Col": col_name})
         return out
 
-        
+    def get_worksheet_sorts(self):
+        out = []
+        for ws in self._workbook.worksheet_objects.values():
+            for s in ws.sorts:
+                ds_name, col_name = _clean_aggregated_column_names(s.column) if s.column else (None, None)
+                out.append({
+                    "Worksheet": ws.name,
+                    "Sort_type": s.sort_type,
+                    "Column": col_name,
+                    "Datasource": ds_name,
+                    "Direction": s.direction,
+                    "Sort_by": s.sort_by,
+                    "Manual_order": s.manual_order,
+                    "Shelf": s.shelf,
+                })
+        return out
+
+    def get_worksheet_encodings(self):
+        out = []
+        for ws in self._workbook.worksheet_objects.values():
+            for enc in ws.encodings:
+                out.append({
+                    "Worksheet": ws.name,
+                    "Channel": enc.channel,
+                    "Column": enc.field,
+                    "Datasource": enc.datasource,
+                    "Raw_column": enc.column,
+                })
+        return out
+
     def get_field_objects(self, column, datasource_name = None):
         """Link filter column or worksheets rows/cols to actual Field object from datasource"""
         if not isinstance(column, str) or not column:

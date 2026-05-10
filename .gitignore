@@ -84,3 +84,9 @@ venv/
 .venv311/
 # Test-generated files
 saved-as-twb.twb
+
+# Evals
+evals/
+
+# Claude
+.claude/

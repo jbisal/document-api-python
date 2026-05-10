@@ -1,5 +1,7 @@
 from tableaudocumentapi.datasource_dependency import DatasourceDependency
 from tableaudocumentapi.filter import Filter, _parse_filters
+from tableaudocumentapi.sort import Sort, _parse_sorts
+from tableaudocumentapi.encoding import Encoding
 from tableaudocumentapi.utils import _clean_aggregated_column_names
 import re
 class Worksheet(object):
@@ -13,6 +15,9 @@ class Worksheet(object):
         self._filters = _parse_filters(self._xml, "table/view/filter")
         self._rows = self._parse_rows_cols('rows')
         self._cols = self._parse_rows_cols('cols')
+        self._sorts = _parse_sorts(self._xml)
+        self._encodings = self._parse_encodings()
+        self._mark_type = self._parse_mark_type()
         simple_id = worksheet_xml.find('simple-id')
         self._id = simple_id.get('uuid', '').replace("{", "").replace("}", "") if simple_id is not None else ''
         
@@ -50,7 +55,33 @@ class Worksheet(object):
     def id(self):
         """Return the worksheet id"""
         return self._id
-    
+
+    @property
+    def sorts(self):
+        """Return the worksheet sort specifications."""
+        return self._sorts
+
+    @property
+    def encodings(self):
+        """Return all mark encoding specifications across panes."""
+        return self._encodings
+
+    @property
+    def mark_type(self):
+        """Return the mark type ('Bar', 'Line', 'Square', 'Automatic', etc.)."""
+        return self._mark_type
+
+    def _parse_encodings(self):
+        encodings = []
+        for pane in self._xml.findall('table/panes/pane'):
+            for enc_child in pane.findall('encodings/*'):
+                encodings.append(Encoding(enc_child))
+        return encodings
+
+    def _parse_mark_type(self):
+        mark = self._xml.find('table/panes/pane/mark')
+        return mark.get('class') if mark is not None else None
+
     def _parse_datasource_dependencies(self):
         """Function that will parse the datsource dependencies under the worksheet"""
         datasource_dependencies = []

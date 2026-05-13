@@ -226,6 +226,12 @@ Represents a tableau worksheet within a workbook file.
 
 `self.cols:` Returns a list of cleaned field references used in worksheet columns.
 
+`self.sorts:` Returns a list of Sort objects describing the worksheet's sort specifications.
+
+`self.encodings:` Returns a list of Encoding objects describing the mark encodings (color, size, shape, text, detail, tooltip, label, path, lod).
+
+`self.mark_type:` Returns a string with the worksheet's mark type (e.g. `Bar`, `Line`, `Circle`, `Square`, `Automatic`), or `None` if unset.
+
 ### Datasource Dependencies *(added in v012)*
 ```python
 class DatasourceDependency(dependency_xml)
@@ -291,6 +297,14 @@ Provides high-level querying capabilities across the workbook.
 
 `Query.get_worksheet_cols(self):` Returns a list of dictionaries containing all column field references from worksheets with datasource and column name mapping.
 
+`Query.get_worksheet_sorts(self):` Returns a list of dictionaries containing all worksheet sort specifications, with worksheet, datasource, column, sort type, direction, sort-by field, manual order, and shelf.
+
+`Query.get_worksheet_encodings(self):` Returns a list of dictionaries containing all mark encodings across worksheet panes, with worksheet, channel (color, size, shape, text, detail, tooltip, label, path, lod), cleaned column reference, datasource, and the raw column reference.
+
+`Query.get_worksheet_mark_types(self):` Returns a list of dictionaries mapping each worksheet to its mark type (e.g. `Bar`, `Line`, `Circle`, `Automatic`).
+
+`Query.get_datasource_filters(self):` Returns a pandas DataFrame of all datasource-level filters (distinct from worksheet-level filters), normalized with exploded groupfilter attributes. Returns an empty DataFrame when no datasource has filters. Same column shape as `get_worksheet_filters()` minus the `Worksheet` column.
+
 `Query.normalize_groupfilter(self, filter_json):` Flattens nested groupfilter structures into tabular format with parent-child relationships. Returns a list of dictionaries with function, level, member, depth, parent_index, and attributes.
 
 `Query.normalize_worksheet_filters(self, worksheet_filters):` Normalizes nested Groupfilters structures in worksheet filters into a flattened pandas DataFrame with exploded groupfilter attributes.
@@ -299,9 +313,9 @@ Provides high-level querying capabilities across the workbook.
 
 `Query.get_workbook_fields(self):` Returns a list of dictionaries containing all non-parameter workbook fields with their attributes including 'alias', 'aliases', 'calculation', 'caption', 'datatype', 'default_aggregation', 'description', 'hidden', 'id', 'is_nominal', 'is_ordinal', 'is_quantitative', 'name', 'param_domain_type', 'role', 'table', 'type', 'value', 'worksheets', and datasource information.
 
-`Query.get_workbook_parameters(self):` Returns a list of dictionaries containing all workbook parameters with their attributes including alias, aliases, calculation, caption, datatype, name, parameter domain type, role, type, value, worksheets, and members.
+`Query.get_workbook_parameters(self):` Returns a list of dictionaries containing all workbook parameters with their attributes including datasource (always `"Parameters"`), field_key (the bracketed key, e.g. `[Parameter 1]`), alias, aliases, calculation, caption, datatype, name, parameter domain type, role, type, value, worksheets, and members. The `Datasource` and `Field_key` keys exist so the resulting frame can be joined into `get_workbook_metadata_table`.
 
-`Query.get_workbook_metadata_table(self):` Generates a comprehensive pandas DataFrame combining all workbook metadata by merging worksheet dependencies, filters with normalized groupfilters, row and column field references, field definitions and attributes, and dashboard-worksheet mappings.
+`Query.get_workbook_metadata_table(self):` Generates a comprehensive pandas DataFrame combining all workbook metadata by merging worksheet dependencies, filters with normalized groupfilters, row and column field references, field definitions and attributes, dashboard-worksheet mappings, worksheet sorts, mark encodings, worksheet mark types, workbook parameters, and datasource-level filters. Identifier columns (e.g. `Worksheet`, `Datasource`, `Column_instance`) are unprefixed; all merged value columns are namespaced by a leading underscore prefix (`_filter_`, `_rows_`, `_cols_`, `_fields_`, `_sorts_`, `_enc_`, `_mark_`, `_param_`, `_dsfilter_`). `compare_workbooks` relies on this `_`-prefix convention to split id columns from value columns when melting.
 
 `Query.compare_workbooks(wb1_filename, wb2_filename, wb1_twb_string=None, wb2_twb_string=None):` Static method that compares two Tableau workbooks and returns a pandas DataFrame with differences. Accepts either filenames or XML strings. The returned DataFrame includes a 'Workbook_Source' column indicating whether items are in 'wb1' (left only), 'wb2' (right only), or 'both' workbooks.
 

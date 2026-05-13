@@ -29,11 +29,11 @@ If you are looking for the official Tableau Document API, see the [upstream proj
 Version 0.12 introduces several optional, backward-compatible enhancements:
 
 - **Workbook comparison** — Compare two workbook versions using `Query.compare_workbooks()`
-- **Comprehensive metadata extraction** — Generate a unified metadata table with `get_workbook_metadata_table()`
+- **Comprehensive metadata extraction** — Generate a unified metadata table with `get_workbook_metadata_table()` covering worksheet dependencies, filters, rows/cols, sorts, mark encodings, mark types, datasource filters, parameters, and field definitions
 - **MCP integration** — AI-powered workbook comparison via Model Context Protocol
 - **Dashboard & worksheet objects** — Structured access to child elements and usage metadata  
 - **Datasource dependency parsing** — Distinguishes field definitions from dependency instances.  
-- **Filter parsing** — Access to filter classes, groupfilters, and hierarchical filter structures.  
+- **Filter parsing** — Access to filter classes, groupfilters, and hierarchical filter structures, with worksheet-level and datasource-level filters surfaced separately.  
 - **High-level query interface** — `workbook.query` for cross-workbook analysis and dependency mapping
 - **Parameter parsing** — Additional Field attributes (`value`, `param_domain_type`, `members`)
 - **XML string input** — Create workbooks directly from raw TWB XML, enabling integration with the [Tableau Server REST API](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api.htm).  

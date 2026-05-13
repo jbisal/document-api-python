@@ -118,6 +118,9 @@ Represents a Tableau worksheet within a workbook.
 - `filters` - List of Filter objects
 - `rows` - List of cleaned field references used in rows
 - `cols` - List of cleaned field references used in columns
+- `sorts` - List of Sort objects
+- `encodings` - List of Encoding objects (color, size, shape, text, detail, tooltip, label, path, lod)
+- `mark_type` - Mark type string (Bar, Line, Circle, etc.)
 
 **Usage:**
 ```python
@@ -155,6 +158,9 @@ Represents filters applied to datasources or worksheets
 - `column` - Cleaned field reference being filtered
 - `datasource` - Name of the datasource for the filtered column
 - `groupfilters` - List of nested groupfilter dictionaries
+- `min_value`, `max_value` - Bounds for quantitative range filters
+- `included_values` - The `included-values` attribute (e.g. `in-range`, `all`)
+- `members` - Flat list of member values for categorical filters
 
 **Usage:**
 ```python
@@ -177,10 +183,14 @@ Provides high-level querying capabilities across the workbook.
 - `get_worksheet_filters()` - Returns flattened list of all filters with metadata and normalized groupfilters
 - `get_worksheet_rows()` - Returns all row field references from worksheets with datasource mapping
 - `get_worksheet_cols()` - Returns all column field references from worksheets with datasource mapping
+- `get_worksheet_sorts()` - Returns all worksheet sort specifications (direction, sort_by, manual order, shelf)
+- `get_worksheet_encodings()` - Returns all mark encodings across worksheets (channel, column, datasource)
+- `get_worksheet_mark_types()` - Returns mark type per worksheet (Bar, Line, Circle, etc.)
+- `get_datasource_filters()` - Returns datasource-level filters as a flattened DataFrame with normalized groupfilters
 - `get_field_objects(column, datasource_name)` - Links column references to Field objects from datasources
 - `get_workbook_fields()` - Returns all workbook fields and their attributes (calculation, datatype, default aggregation)
 - `get_workbook_parameters()` - Returns all workbook parameters and their attributes (aliases, members, value)
-- `get_workbook_metadata_table()` - Generates comprehensive data table combining all workbook metadata for diff analysis
+- `get_workbook_metadata_table()` - Generates comprehensive data table combining dependencies, filters, rows/cols, sorts, encodings, mark types, parameters, datasource filters, and field definitions for diff analysis
 
 **Usage:**
 ```python
@@ -281,11 +291,11 @@ workbook.datasources[3].filters
 
 ### [#129 – Retrieve all fields used in a workbook](https://github.com/tableau/document-api-python/issues/129)
 **✅ Resolved in v012**: Added a Query object that supports high-level traversal of XML for cross-workbook analysis.
-- Query.get_workbook_dependencies() generates a tabular usage report of all fields across dashboards and worksheets.
+- Query.get_worksheet_dependencies() generates a tabular usage report of all fields across dashboards and worksheets.
 
 
 ```python
-workbook.query.get_workbook_dependencies()
+workbook.query.get_worksheet_dependencies()
 # Outputs a tabular field usage report for every Dashboard and Worksheet
 workbook.query.get_workbook_fields()
 # Outputs a tabular attribute report for all fields in a workbook

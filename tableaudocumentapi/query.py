@@ -164,6 +164,30 @@ class Query(object):
                 })
         return out
 
+    def get_worksheet_mark_types(self):
+        return [
+            {"Worksheet": ws.name, "Mark_type": ws.mark_type}
+            for ws in self._workbook.worksheet_objects.values()
+        ]
+
+    def get_datasource_filters(self):
+        datasource_filters = []
+        for ds in self._workbook.datasources:
+            for f in ds.filters:
+                datasource_filters.append({
+                    "Filter_class": f.filter_class,
+                    "Datasource": f.datasource,
+                    "Column": f.column,
+                    "Groupfilters": f.groupfilters,
+                    "Min_value": f.min_value,
+                    "Max_value": f.max_value,
+                    "Included_values": f.included_values,
+                    "Members": f.members,
+                })
+        if not datasource_filters:
+            return pd.DataFrame()
+        return self.normalize_worksheet_filters(datasource_filters)
+
     def get_field_objects(self, column, datasource_name = None):
         """Link filter column or worksheets rows/cols to actual Field object from datasource"""
         if not isinstance(column, str) or not column:
@@ -193,6 +217,8 @@ class Query(object):
             if datasource.name == "Parameters":
                 for field in datasource.fields:
                     workbook_parameters.append({
+                        "Datasource": datasource.name,
+                        "Field_key": field,
                         "Alias": datasource.fields[field].alias,
                         "Aliases": datasource.fields[field].aliases,
                         "Calculation": datasource.fields[field].calculation,
@@ -269,6 +295,41 @@ class Query(object):
             df = df.merge(df_fields.add_prefix('_fields_'),
                         left_on=['Datasource','Column_instance'],
                         right_on=['_fields_datasource','_fields_field_key'],
+                        how='left')
+
+        df_sorts = pd.DataFrame(self.get_worksheet_sorts())
+        if not df_sorts.empty:
+            df = df.merge(df_sorts.add_prefix('_sorts_'),
+                        left_on=['Datasource','Column_instance','Worksheet'],
+                        right_on=['_sorts_Datasource','_sorts_Column','_sorts_Worksheet'],
+                        how='left')
+
+        df_enc = pd.DataFrame(self.get_worksheet_encodings())
+        if not df_enc.empty:
+            df = df.merge(df_enc.add_prefix('_enc_'),
+                        left_on=['Datasource','Column_instance','Worksheet'],
+                        right_on=['_enc_Datasource','_enc_Column','_enc_Worksheet'],
+                        how='left')
+
+        df_mark = pd.DataFrame(self.get_worksheet_mark_types())
+        if not df_mark.empty:
+            df = df.merge(df_mark.add_prefix('_mark_'),
+                        left_on=['Worksheet'],
+                        right_on=['_mark_Worksheet'],
+                        how='left')
+
+        df_params = pd.DataFrame(self.get_workbook_parameters())
+        if not df_params.empty:
+            df = df.merge(df_params.add_prefix('_param_'),
+                        left_on=['Datasource','Column_instance'],
+                        right_on=['_param_Datasource','_param_Field_key'],
+                        how='left')
+
+        df_dsfilters = self.get_datasource_filters()
+        if isinstance(df_dsfilters, pd.DataFrame) and not df_dsfilters.empty:
+            df = df.merge(df_dsfilters.add_prefix('_dsfilter_'),
+                        left_on=['Datasource','Column_instance'],
+                        right_on=['_dsfilter_Datasource','_dsfilter_Column'],
                         how='left')
         return df
 
